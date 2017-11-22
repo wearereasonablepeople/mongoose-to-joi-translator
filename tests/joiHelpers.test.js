@@ -36,6 +36,16 @@ describe('joiHelpers', () => {
             expect(Joi.validate({ location: { latitude: '123', longitude: '456' } }, joiSchema).error).toBeNull();
             expect(Joi.validate({ location: { latitude: '123', longitude: 456 } }, joiSchema).error).toBeTruthy();
         });
+        it('should validate deeply nested documents', () => {
+            const joiSchema = joiHelpers.getJoiSchema(new Schema({ location: new Schema({ latitude: String, longitude: String, customSch: new Schema({ someAtt: String }) }) }));
+            expect(Joi.validate({ location: { latitude: '123', longitude: '456', customSch: { someAtt: 'hello' } } }, joiSchema).error).toBeNull();
+            expect(Joi.validate({ location: { latitude: '123', longitude: '123', customSch: { someAtt: 123 } } }, joiSchema).error).toBeTruthy();
+        });
+        it('should validate arrays within nested documents', () => {
+            const joiSchema = joiHelpers.getJoiSchema(new Schema({ location: new Schema({ latitude: String, longitude: String, customSch: new Schema({ someAtt: [String] }) }) }));
+            expect(Joi.validate({ location: { latitude: '123', longitude: '456', customSch: { someAtt: ['hello'] } } }, joiSchema).error).toBeNull();
+            expect(Joi.validate({ location: { latitude: '123', longitude: '123', customSch: { someAtt: 123 } } }, joiSchema).error).toBeTruthy();
+        });
         it('should validate unknown types', () => {
             const joiSchema = joiHelpers.getJoiSchema(new Schema({ anything: { type: Mixed, required: true } }));
             expect(Joi.validate({ anything: 'hello' }, joiSchema).error).toBeNull();
