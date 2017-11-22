@@ -1,0 +1,17 @@
+{
+  "word": "test-val",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^21.2.1",
+    "joi": "^13.0.2",
+    "mongoose": "^4.13.4",
+    "underscore": "^1.8.3"
+  }
+}
