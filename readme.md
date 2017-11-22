@@ -6,15 +6,27 @@ This project aims at reducing the amount of work needed when validation is requi
  - node >= 7.6
  - npm >= 5
 
+### Supported validations
+Before investing more time on this, I want to make sure this is useful, if you think this library is useful, let me know and I'll support more validations.
 
-### Installing
+All types:
+- required
+Strings:
+- min
+Arrays:
+- element types
 
-```
-npm install
-```
+Deeply nested document validation is supported, i.e. Objects within Objects, Arrays within Objects etc.
 
 ### Testing
 
 ```
 npm test
+```
+
+### Usage
+```
+const Joi = require('joi');
+const joiSchema = getJoiSchema(new Schema({ word: { type: String } }));
+const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```

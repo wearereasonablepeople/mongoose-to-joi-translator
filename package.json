@@ -9,11 +9,10 @@
   "author": "Abdulrahman Amri",
   "license": "ISC",
   "dependencies": {
-    "joi": "^13.0.2",
-    "mongoose": "^4.13.4",
-    "underscore": "^1.8.3"
+    "joi": "^13.0.2"
   },
   "devDependencies": {
+    "mongoose": "^4.13.4",
     "eslint": "^4.11.0",
     "eslint-plugin-jest": "^21.3.2",
     "jest": "^21.2.1"
