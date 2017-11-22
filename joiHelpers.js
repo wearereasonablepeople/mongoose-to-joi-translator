@@ -23,10 +23,6 @@ let arrayHandlers = Object.assign({
     }
 }, baseHandlers);
 
-let embeddedDocumentHanders = Object.assign({
-
-}, baseHandlers);
-
 // calls all functions for a handler type for a specific type
 function callHandlerFunctions(joiObj, handler, attributeDetails){
     for(let funcKey in handler){
