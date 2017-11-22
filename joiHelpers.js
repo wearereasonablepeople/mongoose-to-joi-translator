@@ -19,8 +19,12 @@ let stringHandlers = Object.assign({
 
 let arrayHandlers = Object.assign({
     items: (joiArray, attributeDetails) => {
-        return joiArray.items(callHandlers(attributeDetails.caster));
+        return joiArray.items(director(attributeDetails.caster));
     }
+}, baseHandlers);
+
+let embeddedDocumentHanders = Object.assign({
+
 }, baseHandlers);
 
 // calls all functions for a handler type for a specific type
@@ -31,14 +35,17 @@ function callHandlerFunctions(joiObj, handler, attributeDetails){
     return joiObj;
 }
 
-// finds and calls the appropriate handler
-function callHandlers(objectDetails){
+// finds and calls the appropriate next function
+function director(objectDetails){
     switch(objectDetails.instance) {
         case 'String':
             return callHandlerFunctions(Joi.string(), stringHandlers, objectDetails);
             break;
         case 'Array':
             return callHandlerFunctions(Joi.array(), arrayHandlers, objectDetails);
+            break;
+        case 'Embedded':
+            return getJoiSchema(objectDetails.schema);
             break;
         default:
             return callHandlerFunctions(Joi.any(), baseHandlers, objectDetails);
@@ -52,7 +59,7 @@ function getJoiSchema(mongoSchema){
 
     for(let key in objectsDetails){
         if(objectsDetails.hasOwnProperty(key)){
-            joiSchema[key] = callHandlers(objectsDetails[key]);
+            joiSchema[key] = director(objectsDetails[key]);
         }
     }
     return joiSchema;

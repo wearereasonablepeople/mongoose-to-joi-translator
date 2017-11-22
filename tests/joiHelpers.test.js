@@ -31,11 +31,16 @@ describe('joiHelpers', () => {
             expect(Joi.validate({ words: ['hello', 'world']}, joiSchema).error).toBeNull();
             expect(Joi.validate({ words: [123, 'world']}, joiSchema).error).toBeTruthy();
         });
+        it('should validate embedded documents', () => {
+            const joiSchema = joiHelpers.getJoiSchema(new Schema({ location: new Schema({ latitude: String, longitude: String }) }));
+            expect(Joi.validate({ location: { latitude: '123', longitude: '456' } }, joiSchema).error).toBeNull();
+            expect(Joi.validate({ location: { latitude: '123', longitude: 456 } }, joiSchema).error).toBeTruthy();
+        });
         it('should validate unknown types', () => {
             const joiSchema = joiHelpers.getJoiSchema(new Schema({ anything: { type: Mixed, required: true } }));
             expect(Joi.validate({ anything: 'hello' }, joiSchema).error).toBeNull();
             expect(Joi.validate({ anything: 123 }, joiSchema).error).toBeNull();
             expect(Joi.validate({ anything: undefined }, joiSchema).error).toBeTruthy();
-        })
+        });
     })
 });
