@@ -52,5 +52,5 @@ describe('joiHelpers', () => {
             expect(Joi.validate({ anything: 123 }, joiSchema).error).toBeNull();
             expect(Joi.validate({ anything: undefined }, joiSchema).error).toBeTruthy();
         });
-    })
+    });
 });
