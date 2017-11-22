@@ -72,17 +72,14 @@ function callHandlerFunctions(joiObj, handler, objectDetails){
  */
 function director(objectDetails){
     switch(objectDetails.instance) {
-        case 'String':
-            return callHandlerFunctions(Joi.string(), stringHandlers, objectDetails);
-            break;
-        case 'Array':
-            return callHandlerFunctions(Joi.array(), arrayHandlers, objectDetails);
-            break;
-        case 'Embedded':
-            return getJoiSchema(objectDetails.schema);
-            break;
-        default:
-            return callHandlerFunctions(Joi.any(), baseHandlers, objectDetails);
+    case 'String':
+        return callHandlerFunctions(Joi.string(), stringHandlers, objectDetails);
+    case 'Array':
+        return callHandlerFunctions(Joi.array(), arrayHandlers, objectDetails);
+    case 'Embedded':
+        return getJoiSchema(objectDetails.schema);
+    default:
+        return callHandlerFunctions(Joi.any(), baseHandlers, objectDetails);
     }
 }
 

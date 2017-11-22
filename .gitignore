@@ -1,5 +1,8 @@
 # dependency folders
 node_modules/
 
+# coverage folder
+coverage
+
 # intellij
 .idea/
