@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "ci": "npm run test:coverage"
+    "ci": "npm run test:coverage && codecov"
   },
   "author": "Abdulrahman Amri",
   "license": "ISC",
