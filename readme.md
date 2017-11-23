@@ -30,3 +30,19 @@ const Joi = require('joi');
 const joiSchema = getJoiSchema(new Schema({ word: { type: String } }));
 const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```
+
+### Usage when combined with Joi-API
+
+```
+const catSchema = new mongoose.Schema({
+    name: String,
+    location: new mongoose.Schema({ latitude: String, longitude: String }),
+    token: String
+})
+
+...
+router.post('/:id',  bodyData('name location.latitude location.longitude'), paramData('id'), allData('token'), async (ctx) => {
+    // ctx.bodyData = a validated object { name, location: { latitude, longitude } }
+    // ctx.allData = a validated object containing all the request data sent via params, query, or body
+});
+```
