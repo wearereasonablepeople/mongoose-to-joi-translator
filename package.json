@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "ci": "npm run test:coverage"
   },
   "author": "Abdulrahman Amri",
   "license": "ISC",
