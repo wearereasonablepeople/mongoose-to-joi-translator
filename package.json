@@ -1,5 +1,5 @@
 {
-  "word": "test-val",
+  "name": "mongoose-to-joi-translator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
