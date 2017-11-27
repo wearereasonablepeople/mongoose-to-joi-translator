@@ -6,7 +6,6 @@
  - npm >= 5
 
 ### Supported validations
-Before investing more time on this, I want to make sure this is useful, if you think this library is useful, let me know and I'll support more validations.
 
 All types:
 - required
@@ -14,6 +13,9 @@ Strings:
 - min
 Arrays:
 - element types
+Numbers:
+Objects:
+Dates:
 
 Deeply nested document validation is supported, i.e. Objects within Objects, Arrays within Objects etc.
 
