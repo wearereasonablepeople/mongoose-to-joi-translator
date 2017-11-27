@@ -7,15 +7,15 @@
 
 ### Supported validations
 
-All types:
-- required
-Strings:
-- min
-Arrays:
-- element types
-Numbers:
-Objects:
-Dates:
+ 1. All types
+    * required
+ 2. Strings
+    * min
+ 3. Arrays
+    * element types
+ 4. Numbers
+ 5. Objects
+ 6. Dates
 
 Deeply nested document validation is supported, i.e. Objects within Objects, Arrays within Objects etc.
 
