@@ -46,6 +46,16 @@ describe('joiHelpers', () => {
             expect(Joi.validate({ location: { latitude: '123', longitude: '456', customSch: { someAtt: ['hello'] } } }, joiSchema).error).toBeNull();
             expect(Joi.validate({ location: { latitude: '123', longitude: '123', customSch: { someAtt: 123 } } }, joiSchema).error).toBeTruthy();
         });
+        it('should validate number types', () => {
+            const joiSchema = joiHelpers.getJoiSchema(new Schema({ anything: Number }));
+            expect(Joi.validate({ anything: 123 }, joiSchema).error).toBeNull();
+            expect(Joi.validate({ anything: 'hello' }, joiSchema).error).toBeTruthy();
+        });
+        it('should validate date types', () => {
+            const joiSchema = joiHelpers.getJoiSchema(new Schema({ anything: Date }));
+            expect(Joi.validate({ anything: new Date() }, joiSchema).error).toBeNull();
+            expect(Joi.validate({ anything: 'hi' }, joiSchema).error).toBeTruthy();
+        });
         it('should validate unknown types', () => {
             const joiSchema = joiHelpers.getJoiSchema(new Schema({ anything: { type: Mixed, required: true } }));
             expect(Joi.validate({ anything: 'hello' }, joiSchema).error).toBeNull();

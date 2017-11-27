@@ -36,6 +36,19 @@ let stringHandlers = Object.assign({
 }, baseHandlers);
 
 /**
+ * contains Number options
+ */
+let numberHandlers = Object.assign({
+}, baseHandlers);
+
+/**
+ * contains Date options
+ */
+let dateHandlers = Object.assign({
+
+}, baseHandlers);
+
+/**
  * contains Array options
  */
 let arrayHandlers = Object.assign({
@@ -74,8 +87,12 @@ function director(objectDetails){
     switch(objectDetails.instance) {
     case 'String':
         return callHandlerFunctions(Joi.string(), stringHandlers, objectDetails);
+    case 'Number':
+        return callHandlerFunctions(Joi.number(), numberHandlers, objectDetails);
     case 'Array':
         return callHandlerFunctions(Joi.array(), arrayHandlers, objectDetails);
+    case 'Date':
+        return callHandlerFunctions(Joi.date(), dateHandlers, objectDetails);
     case 'Embedded':
         return getJoiSchema(objectDetails.schema);
     default:
