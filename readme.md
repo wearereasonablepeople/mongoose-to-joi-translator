@@ -2,20 +2,22 @@
 > This project aims at reducing the amount of work needed when validation is required for the database and another location, e.g. API. It also aims at unifying the way validation errors are handled. This is a proof of concept that works only on mongoose's validation.
 
 ### Prerequisites
- - node >= 7.6
+ - node >= 8.9.1
  - npm >= 5
 
 ### Supported validations
 
  1. All types
     * required
+    * valid (enum validation)
  2. Strings
     * min
  3. Arrays
-    * element types
+    * items (element types)
  4. Numbers
  5. Objects
  6. Dates
+ 7. ObjectID
 
 Deeply nested document validation is supported, i.e. Objects within Objects, Arrays within Objects etc.
 
@@ -33,7 +35,7 @@ const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```
 
 ### Usage when combined with generic-joi-validator
-[generic-joi-validator](https://github.com/Amri91/generic-joi-validator)
+[generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator)
 ```
 const { JoiValidator } = require('generic-joi-validator');
 const joiValidator = new JoiValidator();

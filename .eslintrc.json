@@ -1,0 +1,10 @@
+{
+  "extends": ["warp/node", "warp/es6"],
+  "env": {
+    "jest": true,
+      "mongo": true
+  },
+    "parserOptions": {
+    "ecmaVersion": 2017
+  }
+}

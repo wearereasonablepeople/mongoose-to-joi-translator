@@ -1,80 +1,95 @@
+/* eslint-disable no-use-before-define */
+
+'use strict';
+
 const Joi = require('joi');
 
 /**
  * contains base options to be used for all types included unknown ones
  */
-let baseHandlers = {
-    /**
-     * Adds a check for the existence of an attribute
-     * @param {Object} joiBase a Joi.Any() object
-     * @param {Object} attributeDetails
-     * @returns {Object} a Joi.Any() object
-     */
-    required: (joiBase, attributeDetails) => {
-        if(attributeDetails.isRequired)
-            return joiBase.required();
-        else return joiBase;
+class AnyHandler {
+  constructor(objectDetails, baseJoiObj) {
+    this.objectDetails = objectDetails;
+    this.joiObj = baseJoiObj || Joi.any();
+    this.handlers = [this.required, this.valid];
+  }
+
+  /**
+   * calls all functions in a handler for a specific type
+   */
+  handle() {
+    this.handlers.forEach(func => func.call(this));
+  }
+
+  /**
+   * Adds a check for the existence of an attribute
+   */
+  required() {
+    if(this.objectDetails.isRequired) {this.joiObj = this.joiObj.required();}
+  }
+  /**
+   * Adds a check for enums
+   */
+  valid() {
+    if(this.objectDetails.options.enum) {
+      this.joiObj = this.joiObj.valid(this.objectDetails.options.enum);
     }
-};
+  }
+}
 
 /**
  * contains String options
  */
-let stringHandlers = Object.assign({
-    /**
-     * Adds a check for string minimum characters, does not support array type of min option yet
-     * @param {Object} joiString a Joi.string() object
-     * @param {Object} attributeDetails
-     * @returns {Object} a Joi.string() object
-     */
-    min: (joiString, attributeDetails) => {
-        if(attributeDetails.options.min){
-            // todo: support array type of min
-            return joiString.min(attributeDetails.options.min);
-        }else return joiString;
+class StringHandler extends AnyHandler {
+  constructor(objectDetails, baseJoiObject) {
+    super(objectDetails, baseJoiObject || Joi.string());
+    this.handlers = this.handlers.concat([this.min]);
+  }
+
+  /**
+   * Adds a check for string minimum characters, does not support array type of min option yet
+   */
+  min() {
+    if(this.objectDetails.options.min) {
+      // eslint-disable-next-line no-warning-comments
+      // todo: support array type of min
+      this.joiObj = this.joiObj.min(this.objectDetails.options.min);
     }
-}, baseHandlers);
+  }
+}
 
 /**
  * contains Number options
  */
-let numberHandlers = Object.assign({
-}, baseHandlers);
+class NumberHandlers extends AnyHandler {
+  constructor(objectDetails, baseJoiObject) {
+    super(objectDetails, baseJoiObject || Joi.number());
+  }
+}
 
 /**
  * contains Date options
  */
-let dateHandlers = Object.assign({
-
-}, baseHandlers);
+class DateHandlers extends AnyHandler {
+  constructor(objectDetails, baseJoiObject) {
+    super(objectDetails, baseJoiObject || Joi.date());
+  }
+}
 
 /**
  * contains Array options
  */
-let arrayHandlers = Object.assign({
-    /**
-     * Adds a check for array element types
-     * @param {Object} joiArray a Joi.Array() object
-     * @param {Object} objectDetails
-     * @param {Object} objectDetails.caster shows the type of the nested element
-     * @returns {Object} a Joi.Array() object
-     */
-    items: (joiArray, objectDetails) => {
-        return joiArray.items(director(objectDetails.caster));
-    }
-}, baseHandlers);
-
-/**
- * calls all functions in a handler for a specific type
- * @param {Object} joiObj a Joi object
- * @param {Object} handler contains the supported options for each type
- * @param {Object} objectDetails
- */
-function callHandlerFunctions(joiObj, handler, objectDetails){
-    for(let funcKey in handler){
-        joiObj = handler[funcKey](joiObj, objectDetails);
-    }
-    return joiObj;
+class ArrayHandlers extends AnyHandler {
+  constructor(objectDetails, baseJoiObject) {
+    super(objectDetails, baseJoiObject || Joi.array());
+    this.handlers = this.handlers.concat([this.items]);
+  }
+  /**
+   * Adds a check for array element types
+   */
+  items() {
+    this.joiObj = this.joiObj.items(director(this.objectDetails.caster));
+  }
 }
 
 /**
@@ -83,21 +98,34 @@ function callHandlerFunctions(joiObj, handler, objectDetails){
  * @param {String} [objectDetails.instance] contains the type of the object
  * @param {Object} [objectDetails.schema] contains the full mongoose embedded schema
  */
-function director(objectDetails){
-    switch(objectDetails.instance) {
+// eslint-disable-next-line func-style
+function director(objectDetails) {
+  let handler;
+
+  switch(objectDetails.instance) {
     case 'String':
-        return callHandlerFunctions(Joi.string(), stringHandlers, objectDetails);
+      handler = new StringHandler(objectDetails);
+      break;
     case 'Number':
-        return callHandlerFunctions(Joi.number(), numberHandlers, objectDetails);
+      handler = new NumberHandlers(objectDetails);
+      break;
     case 'Array':
-        return callHandlerFunctions(Joi.array(), arrayHandlers, objectDetails);
+      handler = new ArrayHandlers(objectDetails);
+      break;
     case 'Date':
-        return callHandlerFunctions(Joi.date(), dateHandlers, objectDetails);
+      handler = new DateHandlers(objectDetails);
+      break;
     case 'Embedded':
-        return getJoiSchema(objectDetails.schema);
+      return getJoiSchema(objectDetails.schema);
+    case 'ObjectID':
+      handler = new StringHandler(objectDetails, Joi.string().hex().length(24).required());
+      break;
     default:
-        return callHandlerFunctions(Joi.any(), baseHandlers, objectDetails);
-    }
+      handler = new AnyHandler(objectDetails);
+      break;
+  }
+  handler.handle();
+  return handler.joiObj;
 }
 
 /**
@@ -105,16 +133,17 @@ function director(objectDetails){
  * @param {Object} mongoSchema mongoose schema
  * @returns {Object}
  */
-function getJoiSchema(mongoSchema){
-    let joiSchema = {};
-    const objectsDetails = mongoSchema.paths;
+const getJoiSchema = mongoSchema => {
+  const joiSchema = {};
+  const objectsDetails = mongoSchema.paths;
 
-    for(let key in objectsDetails){
-        if(objectsDetails.hasOwnProperty(key)){
-            joiSchema[key] = director(objectsDetails[key]);
-        }
+  for(const key in objectsDetails) {
+    // eslint-disable-next-line no-prototype-builtins
+    if(objectsDetails.hasOwnProperty(key)) {
+      joiSchema[key] = director(objectsDetails[key]);
     }
-    return joiSchema;
-}
+  }
+  return joiSchema;
+};
 
 exports.getJoiSchema = getJoiSchema;

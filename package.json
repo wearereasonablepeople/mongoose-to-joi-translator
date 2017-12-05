@@ -1,7 +1,7 @@
 {
   "name": "mongoose-to-joi-translator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Extracts schema from mongoose and generates an equivilent JOI schema.",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -9,15 +9,15 @@
     "ci": "npm run test:coverage && codecov"
   },
   "author": "Abdulrahman Amri",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "joi": "^13.0.2"
   },
   "devDependencies": {
     "codecov": "^3.0.0",
     "eslint": "^4.11.0",
-    "eslint-plugin-jest": "^21.3.2",
     "jest": "^21.2.1",
-    "mongoose": "^4.13.4"
+    "mongoose": "^4.13.4",
+    "eslint-config-warp": "^2.1.0"
   }
 }
