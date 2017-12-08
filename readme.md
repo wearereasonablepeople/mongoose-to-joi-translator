@@ -1,4 +1,4 @@
-# mongoose-to-joi-translator [![Build Status](https://travis-ci.com/wearereasonablepeople/mongoose-to-joi-translator.svg?token=yQTBKvDF8NXw5WvCpzqf&branch=master)](https://travis-ci.com/wearereasonablepeople/mongoose-to-joi-translator) [![codecov](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator/branch/master/graph/badge.svg?token=i5p2uk2acI)](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator)
+# mongoose-to-joi-translator [![Build Status](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator.svg?branch=master)](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator) [![codecov](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator/branch/master/graph/badge.svg?token=i5p2uk2acI)](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator)
 > This project aims at reducing the amount of work needed when validation is required for the database and another location, e.g. API. It also aims at unifying the way validation errors are handled. This is a proof of concept that works only on mongoose's validation.
 
 ### Prerequisites
