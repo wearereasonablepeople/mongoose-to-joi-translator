@@ -83,8 +83,13 @@ const app = new Koa();
 
 app.use(bodyParser());
 
+const getResourceName = url =>
+  // takes foo from '/foo/something/another'
+  url.replace(/^\/([^/][^?|^/]*).*$/, '$1');
+
 const koaValidator = async (ctx, next) => {
-    const { error, value } = joiValidator.prepare(ctx.url.substr(ctx.url.lastIndexOf('/') + 1), ctx.request.body);
+    // Get the resource name from the url or you can specify it manually.
+    const { error, value } = joiValidator.prepare(getResourceName(ctx.url), ctx.request.body);
     ctx.assert(!error, 400, value);
     ctx.state.data = value;
     return next();
