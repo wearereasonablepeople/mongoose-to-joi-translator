@@ -1,11 +1,10 @@
 # mongoose-to-joi-translator 
 [![Build Status](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator.svg?branch=master)](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator)
 [![codecov](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator/branch/master/graph/badge.svg?token=i5p2uk2acI)](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator)
-> This project aims at reducing the amount of work needed when validation is required for the database and another location, e.g. API. It also aims at unifying the way validation errors are handled. This is a proof of concept that works only on mongoose's validation.
 
-### Prerequisites
- - node >= 8.9.1
- - npm >= 5
+### Description
+Translates Mongoose schema to Joi. You can use Joi schema to do the validation. The idea is to write database models once and validate everywhere.
+You may use this package with [generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator).
 
 ### Supported validations
 
@@ -31,81 +30,10 @@ npm test
 
 ### Usage
 ```
+// Require the library
 const getJoiSchema = require('mongoose-to-joi-translator');
+// Extract schema
 const joiSchema = getJoiSchema(new Schema({ word: { type: String } }));
+// Validate manually or use a package such as [generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator)
 const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
-```
-
-### Usage when combined with generic-joi-validator
-[generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator)
-```
-const { JoiValidator } = require('generic-joi-validator');
-const joiValidator = new JoiValidator();
-
-// Use a translator to extract Joi schema from your database
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const getJoiSchema = require('mongoose-to-joi-translator');
-joiValidator.schemata.stores = getJoiSchema(new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    location: new Schema({
-        latitude: {
-            type: String,
-            required: true
-        },
-        longitude: {
-            type: String,
-            required: true
-        }
-    })
-}));
-
-
-// or add your schema manually
-joiValidator.schemata.stores = {
-    name: Joi.string().required(),
-    location: {
-        latitude: Joi.string().required(),
-        longitude: Joi.string().required()
-    }
-};
-
-// With koa
-const Koa = require('koa');
-const bodyParser = require('koa-bodyparser');
-const Router = require('koa-router');
-
-const router = new Router();
-const app = new Koa();
-
-app.use(bodyParser());
-
-const getResourceName = url =>
-  // takes foo from '/foo/something/another'
-  url.replace(/^\/([^/][^?|^/]*).*$/, '$1');
-
-const koaValidator = async (ctx, next) => {
-    // Get the resource name from the url or you can specify it manually.
-    const { error, value } = joiValidator.prepare(getResourceName(ctx.url), ctx.request.body);
-    ctx.assert(!error, 400, value);
-    ctx.state.data = value;
-    return next();
-};
-
-router.post(
-    '/stores',
-    koaValidator,
-    async (ctx, next) => {
-        ctx.body = ctx.state.data;
-        return next();
-    }
-);
-
-app.use(router.allowedMethods({ throw: true }));
-app.use(router.routes());
-
-app.listen(3000);
 ```
