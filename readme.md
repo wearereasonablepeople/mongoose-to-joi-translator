@@ -3,6 +3,8 @@
 # mongoose-to-joi-translator 
 [![Build Status](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator.svg?branch=master)](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator)
 [![codecov](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator/branch/master/graph/badge.svg?token=i5p2uk2acI)](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator)
+[![dependencies Status](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator/status.svg)](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator)
+[![devDependencies Status](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator/dev-status.svg)](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator?type=dev)
 
 ### Description
 Translates Mongoose schema to Joi. You can use Joi schema to do the validation. The idea is to write database models once and validate everywhere.
