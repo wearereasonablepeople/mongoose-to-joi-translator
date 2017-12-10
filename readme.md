@@ -6,6 +6,11 @@
 Translates Mongoose schema to Joi. You can use Joi schema to do the validation. The idea is to write database models once and validate everywhere.
 You may use this package with [generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator).
 
+### Installation
+```
+npm install mongoose-to-joi-translator
+```
+
 ### Supported validations
 
  1. All types
@@ -34,6 +39,6 @@ npm test
 const getJoiSchema = require('mongoose-to-joi-translator');
 // Extract schema
 const joiSchema = getJoiSchema(new Schema({ word: { type: String } }));
-// Validate manually or use a package such as [generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator)
+// Validate manually or use a package such as generic-joi-validator
 const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```
