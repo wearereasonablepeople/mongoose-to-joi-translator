@@ -119,6 +119,7 @@ describe('joiHelpers', () => {
       }));
       delete joiSchema._id;
       expect(Joi.validate({phone: '111-222-3333'}, joiSchema).error).toBeNull();
+      expect(Joi.validate({phone: '111-222-3333'}, joiSchema).value.phone).toEqual('111-222-3333');
       expect(Joi.validate({phone: '111'}, joiSchema).error).toBeTruthy();
     });
   });

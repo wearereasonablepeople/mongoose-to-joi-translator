@@ -60,7 +60,7 @@ class AnyHandler {
           validate(params, value, state, options) {
             const result = validator(value);
             return result ?
-              result :
+              value :
               this.createError('customValidator.userDefinedValidator', {v: value}, state, options);
           }
         }
