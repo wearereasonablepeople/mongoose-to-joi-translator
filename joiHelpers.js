@@ -12,6 +12,7 @@ class AnyHandler {
     this.objectDetails = objectDetails;
     this.joiObj = baseJoiObj || Joi.any();
     this.handlers = [this.required, this.valid];
+    this.customValidator();
   }
 
   /**
@@ -34,6 +35,37 @@ class AnyHandler {
     if(this.objectDetails.options.enum) {
       this.joiObj = this.joiObj.valid(this.objectDetails.options.enum);
     }
+  }
+
+  customValidator() {
+    const validator = Object.values(this.objectDetails.validators).find(
+      validator => validator.type === 'user defined'
+    );
+
+    if(validator) {
+      this.extendJoiWithValidators(validator);
+    }
+  }
+
+  extendJoiWithValidators({validator, message}) {
+    this.joiObj = Joi.extend((joi) => ({
+      base: this.joiObj,
+      name: `customValidator`,
+      language: {
+        userDefinedValidator: message || 'failed to pass the validation check'
+      },
+      rules: [
+        {
+          name: 'userDefinedValidator',
+          validate(params, value, state, options) {
+            const result = validator(value);
+            return result ?
+              result :
+              this.createError('customValidator.userDefinedValidator', {v: value}, state, options);
+          }
+        }
+      ]
+    })).customValidator().userDefinedValidator();
   }
 }
 

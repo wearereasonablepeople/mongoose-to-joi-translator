@@ -28,6 +28,7 @@ npm install mongoose-to-joi-translator
  5. Objects
  6. Dates
  7. ObjectID
+ 8. Custom sync validators as documented [here](http://mongoosejs.com/docs/validation.html#custom-validators)
 
 Deeply nested document validation is supported, i.e. Objects within Objects, Arrays within Objects etc.
 

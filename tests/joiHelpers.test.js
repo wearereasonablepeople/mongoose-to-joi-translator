@@ -104,5 +104,22 @@ describe('joiHelpers', () => {
       expect(Joi.validate({color: 'white'}, joiSchema).error).toBeNull();
       expect(Joi.validate({color: 'blue'}, joiSchema).error).toBeTruthy();
     });
+    it('should validate using custom validators', () => {
+      const joiSchema = joiHelpers.getJoiSchema(new Schema({
+        phone: {
+          type: String,
+          validate: {
+            validator: function(v) {
+              return /\d{3}-\d{3}-\d{4}/.test(v);
+            },
+            message: 'is not a valid phone number!'
+          },
+          required: [true, 'User phone number required']
+        }
+      }));
+      delete joiSchema._id;
+      expect(Joi.validate({phone: '111-222-3333'}, joiSchema).error).toBeNull();
+      expect(Joi.validate({phone: '111'}, joiSchema).error).toBeTruthy();
+    });
   });
 });
