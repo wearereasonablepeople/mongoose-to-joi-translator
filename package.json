@@ -16,9 +16,9 @@
   },
   "devDependencies": {
     "codecov": "^3.0.0",
-    "eslint": "^4.11.0",
+    "eslint": "^4.13.1",
+    "eslint-config-warp": "^2.1.0",
     "jest": "^21.2.1",
-    "mongoose": "^4.13.4",
-    "eslint-config-warp": "^2.1.0"
+    "mongoose": "^4.13.7"
   }
 }
