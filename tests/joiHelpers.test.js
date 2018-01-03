@@ -71,6 +71,19 @@ describe('joiHelpers', () => {
       expect(Joi.validate({location: {latitude: '123', longitude: '123', customSch:
             {someAtt: 123}}}, joiSchema).error).toBeTruthy();
     });
+
+    it('should validate arrays of documents', () => {
+      const joiSchema = joiHelpers.getJoiSchema(new Schema({
+        locations:
+          [
+            new Schema({latitude: String, longitude: String}, {_id: false})
+          ]
+      }));
+      delete joiSchema._id;
+      expect(Joi.validate({locations: [{latitude: '123', longitude: '456'}]}, joiSchema).error)
+      .toBeNull();
+      expect(Joi.validate({locations: [1]}, joiSchema).error).toBeTruthy();
+    });
     it('should validate number types', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({anything: Number}));
       delete joiSchema._id;

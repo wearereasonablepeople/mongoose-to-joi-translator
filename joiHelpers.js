@@ -3,6 +3,7 @@
 'use strict';
 
 const Joi = require('joi');
+const {isFunction} = require('lodash');
 
 /**
  * contains base options to be used for all types included unknown ones
@@ -130,21 +131,27 @@ class ArrayHandlers extends AnyHandler {
    * Adds a check for array element types
    */
   items() {
-    this.joiObj = this.joiObj.items(director(this.objectDetails.caster));
+    // Indicator of an object in an array
+    if(this.objectDetails.caster.$isArraySubdocument) {
+      this.joiObj = this.joiObj.items(director(this.objectDetails.caster, 'Embedded'));
+    }else {
+      this.joiObj = this.joiObj.items(director(this.objectDetails.caster));
+    }
   }
 }
 
 /**
  * finds and calls the appropriate next function
  * @param {Object} objectDetails
+ * @param {String} [dynamicInstanceType] in case the caller wants to force specific behavior
  * @param {String} [objectDetails.instance] contains the type of the object
  * @param {Object} [objectDetails.schema] contains the full mongoose embedded schema
  */
 // eslint-disable-next-line func-style
-function director(objectDetails) {
+function director(objectDetails, dynamicInstanceType) {
   let handler;
 
-  switch(objectDetails.instance) {
+  switch(dynamicInstanceType || objectDetails.instance) {
     case 'String':
       handler = new StringHandler(objectDetails);
       break;
