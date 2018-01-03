@@ -3,7 +3,6 @@
 'use strict';
 
 const Joi = require('joi');
-const {isFunction} = require('lodash');
 
 /**
  * contains base options to be used for all types included unknown ones
