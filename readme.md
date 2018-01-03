@@ -43,8 +43,10 @@ npm test
 ```
 // Require the library
 const getJoiSchema = require('mongoose-to-joi-translator');
+const schema = new Schema({ word: { type: String } });
+const ModelName = mongoose.model('ModelName', schema);
 // Extract schema
-const joiSchema = getJoiSchema(new Schema({ word: { type: String } }));
-// Validate manually or use a package such as generic-joi-validator
+const joiSchema = getJoiSchema(ModelName.schema);
+// Use Joi to validate
 const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```
