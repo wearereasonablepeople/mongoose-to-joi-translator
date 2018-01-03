@@ -20,6 +20,7 @@ npm install mongoose-to-joi-translator
  1. All types
     * required
     * valid (enum validation)
+    * default
  2. Strings
     * min
  3. Arrays
