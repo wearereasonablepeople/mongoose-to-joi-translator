@@ -6,3 +6,6 @@ coverage
 
 # intellij
 .idea/
+
+# package-lock.json
+package-lock.json

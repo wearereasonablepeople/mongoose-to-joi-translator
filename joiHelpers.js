@@ -11,7 +11,7 @@ class AnyHandler {
   constructor(objectDetails, baseJoiObj) {
     this.objectDetails = objectDetails;
     this.joiObj = baseJoiObj || Joi.any();
-    this.handlers = [this.required, this.valid];
+    this.handlers = [this.default, this.required, this.valid];
     this.customValidator();
   }
 
@@ -37,6 +37,16 @@ class AnyHandler {
     }
   }
 
+  /**
+   * Handles default
+   */
+  default() {
+    // Should not mix default with required, falling back to joi's way of handling the conflict
+    if(this.objectDetails.options.default) {
+      this.joiObj = this.joiObj.default(this.objectDetails.options.default, 'default value');
+    }
+  }
+
   customValidator() {
     const validator = Object.values(this.objectDetails.validators).find(
       validator => validator.type === 'user defined'
@@ -48,7 +58,7 @@ class AnyHandler {
   }
 
   extendJoiWithValidators({validator, message}) {
-    this.joiObj = Joi.extend((joi) => ({
+    this.joiObj = Joi.extend(joi => ({
       base: this.joiObj,
       name: `customValidator`,
       language: {
