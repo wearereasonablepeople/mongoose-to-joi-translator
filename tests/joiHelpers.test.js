@@ -143,5 +143,14 @@ describe('joiHelpers', () => {
       expect(Joi.validate({}, joiSchema).error).toBeNull();
       expect(Joi.validate({color: ''}, joiSchema).error).toBeTruthy();
     });
+    it('should apply default of falsy values', () => {
+      const joiSchema = joiHelpers.getJoiSchema(
+        new Schema({someBool: {type: Boolean, default: false}}, {_id: false})
+      );
+      expect(Joi.validate({someBool: true}, joiSchema).error).toBeNull();
+      expect(Joi.validate({someBool: null}, joiSchema).error).toBeTruthy();
+      // Leave unset data as is
+      expect(Joi.validate({someBool: undefined}, joiSchema).error).toBeNull();
+    });
   });
 });

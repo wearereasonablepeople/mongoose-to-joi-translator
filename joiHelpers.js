@@ -42,7 +42,7 @@ class AnyHandler {
    */
   default() {
     // Should not mix default with required, falling back to joi's way of handling the conflict
-    if(this.objectDetails.options.default) {
+    if(this.objectDetails.options.default !== undefined) {
       this.joiObj = this.joiObj.default(this.objectDetails.options.default, 'default value');
     }
   }
@@ -162,6 +162,9 @@ function director(objectDetails, dynamicInstanceType) {
       break;
     case 'Date':
       handler = new DateHandlers(objectDetails);
+      break;
+    case 'Boolean':
+      handler = new AnyHandler(objectDetails, Joi.boolean());
       break;
     case 'Embedded':
       return getJoiSchema(objectDetails.schema);
