@@ -3,6 +3,7 @@
 'use strict';
 
 const Joi = require('joi');
+const {has, __, pathOr} = require('ramda');
 
 /**
  * contains base options to be used for all types included unknown ones
@@ -48,12 +49,14 @@ class AnyHandler {
   }
 
   customValidator() {
-    const validator = Object.values(this.objectDetails.validators).find(
-      validator => validator.type === 'user defined'
-    );
+    if(this.objectDetails.validators) {
+      const validator = Object.values(this.objectDetails.validators).find(
+        validator => validator.type === 'user defined'
+      );
 
-    if(validator) {
-      this.extendJoiWithValidators(validator);
+      if (validator) {
+        this.extendJoiWithValidators(validator);
+      }
     }
   }
 
@@ -92,7 +95,7 @@ class StringHandler extends AnyHandler {
    * Adds a check for string minimum characters, does not support array type of min option yet
    */
   min() {
-    if(this.objectDetails.options.min) {
+    if(this.objectDetails.options.min !== undefined) {
       // eslint-disable-next-line no-warning-comments
       // todo: support array type of min
       this.joiObj = this.joiObj.min(this.objectDetails.options.min);
@@ -106,6 +109,29 @@ class StringHandler extends AnyHandler {
 class NumberHandlers extends AnyHandler {
   constructor(objectDetails, baseJoiObject) {
     super(objectDetails, baseJoiObject || Joi.number());
+    this.handlers = this.handlers.concat([this.min, this.max]);
+  }
+
+  /**
+   * Adds a check for number minimum, does not support array type of min option yet
+   */
+  min() {
+    if(this.objectDetails.options.min !== undefined) {
+      // eslint-disable-next-line no-warning-comments
+      // todo: support array type of min
+      this.joiObj = this.joiObj.min(this.objectDetails.options.min);
+    }
+  }
+
+  /**
+   * Adds a check for number max, does not support array type of max option yet
+   */
+  max() {
+    if(this.objectDetails.options.max !== undefined) {
+      // eslint-disable-next-line no-warning-comments
+      // todo: support array type of max
+      this.joiObj = this.joiObj.max(this.objectDetails.options.max);
+    }
   }
 }
 
@@ -140,6 +166,36 @@ class ArrayHandlers extends AnyHandler {
 }
 
 /**
+ * contains Object options
+ */
+class ObjectHandlers extends AnyHandler {
+  constructor(objectDetails, baseJoiObject) {
+    super(objectDetails, baseJoiObject || Joi.object());
+    this.handlers = this.handlers.concat([this.properties]);
+  }
+
+  /**
+   * Handles object properties
+   */
+  properties() {
+    // If this is the root document, it will not have schema property.
+    // Also, this for backward compatibility if the user did Model or Model.schema
+    // This part is not required now, but will be required later when dealing with issue #9
+    const nestedObjectDetails = pathOr(
+      this.objectDetails.paths, ['objectDetails', 'schema', 'paths'], this
+    );
+    const joiSchema = {};
+    const nestedPropHas = has(__, nestedObjectDetails);
+    for(const key in nestedObjectDetails) {
+      if(nestedPropHas(key)) {
+        joiSchema[key] = director(nestedObjectDetails[key]);
+      }
+    }
+    this.joiObj = this.joiObj.keys(joiSchema);
+  }
+}
+
+/**
  * finds and calls the appropriate next function
  * @param {Object} objectDetails
  * @param {String} [dynamicInstanceType] in case the caller wants to force specific behavior
@@ -167,7 +223,8 @@ function director(objectDetails, dynamicInstanceType) {
       handler = new AnyHandler(objectDetails, Joi.boolean());
       break;
     case 'Embedded':
-      return getJoiSchema(objectDetails.schema);
+      handler = new ObjectHandlers(objectDetails, Joi.object());
+      break;
     case 'ObjectID':
       handler = new StringHandler(objectDetails, Joi.string().hex().length(24).required());
       break;
@@ -187,10 +244,10 @@ function director(objectDetails, dynamicInstanceType) {
 const getJoiSchema = mongoSchema => {
   const joiSchema = {};
   const objectsDetails = mongoSchema.paths;
+  const objDetailsHas = has(__, objectsDetails);
 
   for(const key in objectsDetails) {
-    // eslint-disable-next-line no-prototype-builtins
-    if(objectsDetails.hasOwnProperty(key)) {
+    if(objDetailsHas(key)) {
       joiSchema[key] = director(objectsDetails[key]);
     }
   }
