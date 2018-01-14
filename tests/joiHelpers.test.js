@@ -4,6 +4,9 @@ const {Schema, Types: {ObjectId}} = require('mongoose');
 const joiHelpers = require('../joiHelpers');
 const Joi = require('joi');
 
+// schema creator helper, it just removes the _id from the schema to make validation easier.
+const sc = obj => new Schema(obj, {_id: false});
+
 // integration test
 describe('joiHelpers', () => {
   describe('#getJoiSchema', () => {
@@ -37,35 +40,39 @@ describe('joiHelpers', () => {
       expect(Joi.validate({words: ['hello', 'world']}, joiSchema).error).toBeNull();
       expect(Joi.validate({words: [123, 'world']}, joiSchema).error).toBeTruthy();
     });
+    /**
+     * Embedded documents
+     */
     it('should validate embedded documents', () => {
-      const joiSchema = joiHelpers.getJoiSchema(new Schema({location:
-          new Schema({latitude: String, longitude: String})}));
-      delete joiSchema._id;
-      delete joiSchema.location._id;
+      const joiSchema = joiHelpers.getJoiSchema(
+        sc({location: sc({latitude: String, longitude: String})}));
       expect(Joi.validate({location: {latitude: '123', longitude: '456'}}, joiSchema).error)
       .toBeNull();
       expect(Joi.validate({location: {latitude: '123', longitude: 456}}, joiSchema).error)
       .toBeTruthy();
     });
+    it('should validate required embedded documents', () => {
+      const joiSchema = joiHelpers.getJoiSchema(
+        sc({location: {type: sc({latitude: String, longitude: String}), required: true}})
+      );
+      expect(Joi.validate({}, joiSchema).error).toBeTruthy();
+      expect(Joi.validate({location: {}}, joiSchema).error).toBeNull();
+    });
     it('should validate deeply nested documents', () => {
-      const joiSchema = joiHelpers.getJoiSchema(new Schema({location:
-          new Schema({latitude: String, longitude: String, customSch:
-              new Schema({someAtt: String})})}));
-      delete joiSchema._id;
-      delete joiSchema.location._id;
-      delete joiSchema.location.customSch._id;
+      const joiSchema = joiHelpers.getJoiSchema(
+        sc({location: sc({latitude: String, longitude: String, customSch: sc({someAtt: String})})})
+      );
       expect(Joi.validate({location: {latitude: '123', longitude: '456', customSch:
             {someAtt: 'hello'}}}, joiSchema).error).toBeNull();
       expect(Joi.validate({location: {latitude: '123', longitude: '123', customSch:
             {someAtt: 123}}}, joiSchema).error).toBeTruthy();
     });
     it('should validate arrays within nested documents', () => {
-      const joiSchema = joiHelpers.getJoiSchema(new Schema({location:
-          new Schema({latitude: String, longitude: String, customSch:
-              new Schema({someAtt: [String]})})}));
-      delete joiSchema._id;
-      delete joiSchema.location._id;
-      delete joiSchema.location.customSch._id;
+      const joiSchema = joiHelpers.getJoiSchema(
+        sc({
+          location: sc({latitude: String, longitude: String, customSch: sc({someAtt: [String]})})
+        })
+      );
       expect(Joi.validate({location: {latitude: '123', longitude: '456', customSch:
             {someAtt: ['hello']}}}, joiSchema).error).toBeNull();
       expect(Joi.validate({location: {latitude: '123', longitude: '123', customSch:
@@ -84,12 +91,28 @@ describe('joiHelpers', () => {
       .toBeNull();
       expect(Joi.validate({locations: [1]}, joiSchema).error).toBeTruthy();
     });
+    /**
+     * Number type
+     */
     it('should validate number types', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({anything: Number}));
       delete joiSchema._id;
       expect(Joi.validate({anything: 123}, joiSchema).error).toBeNull();
       expect(Joi.validate({anything: 'hello'}, joiSchema).error).toBeTruthy();
     });
+    it('should validate numbers using min and max validators', () => {
+      const joiSchema = joiHelpers.getJoiSchema(new Schema(
+        {anything: {type: Number, min: 0, max: 1}},
+        {_id: false}
+      ));
+      expect(Joi.validate({anything: 0}, joiSchema).error).toBeNull();
+      expect(Joi.validate({anything: 1}, joiSchema).error).toBeNull();
+      expect(Joi.validate({anything: -1}, joiSchema).error).toBeTruthy();
+      expect(Joi.validate({anything: 2}, joiSchema).error).toBeTruthy();
+    });
+    /**
+     * Date type
+     */
     it('should validate date types', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({anything: Date}));
       delete joiSchema._id;
@@ -140,7 +163,9 @@ describe('joiHelpers', () => {
         new Schema({color: {type: String, default: 'blue'}})
       );
       delete joiSchema._id;
-      expect(Joi.validate({}, joiSchema).error).toBeNull();
+      const {error, value} = Joi.validate({}, joiSchema);
+      expect(error).toBeNull();
+      expect(value).toEqual({color: 'blue'});
       expect(Joi.validate({color: ''}, joiSchema).error).toBeTruthy();
     });
     it('should apply default of falsy values', () => {
@@ -148,9 +173,15 @@ describe('joiHelpers', () => {
         new Schema({someBool: {type: Boolean, default: false}}, {_id: false})
       );
       expect(Joi.validate({someBool: true}, joiSchema).error).toBeNull();
+      let {error, value} = Joi.validate({}, joiSchema);
+      expect(error).toBeNull();
+      expect(value).toEqual({someBool: false});
+
+      ({error, value} = Joi.validate({someBool: undefined}, joiSchema));
+      expect(error).toBeNull();
+      expect(value).toEqual({someBool: false});
+      // fails on values that are not boolean
       expect(Joi.validate({someBool: null}, joiSchema).error).toBeTruthy();
-      // Leave unset data as is
-      expect(Joi.validate({someBool: undefined}, joiSchema).error).toBeNull();
     });
   });
 });

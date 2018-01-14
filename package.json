@@ -12,7 +12,8 @@
   "author": "Abdulrahman Amri",
   "license": "MIT",
   "dependencies": {
-    "joi": "^13.0.2"
+    "joi": "^13.0.2",
+    "ramda": "^0.25.0"
   },
   "devDependencies": {
     "codecov": "^3.0.0",
