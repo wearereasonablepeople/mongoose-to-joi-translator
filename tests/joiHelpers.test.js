@@ -103,7 +103,7 @@ describe('joiHelpers', () => {
     });
     it('should validate simple mongoose Model.schema (for backward compatibility)', () => {
       const schema = sc({location: sc({latitude: String, longitude: String})});
-      const Model = mongoose.model('SomeModelName', schema);
+      const Model = mongoose.model('AnotherModelName', schema);
       const joiSchema = joiHelpers.getJoiSchema(Model.schema);
       expect(Joi.validate({location: {latitude: '123', longitude: '456'}}, joiSchema).error)
       .toBeNull();
