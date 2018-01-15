@@ -1,6 +1,6 @@
 {
   "name": "mongoose-to-joi-translator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Extracts schema from mongoose and generates an equivilent JOI schema.",
   "repository": "git@github.com:wearereasonablepeople/mongoose-to-joi-translator.git",
   "main": "index.js",
