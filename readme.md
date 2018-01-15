@@ -49,7 +49,7 @@ const getJoiSchema = require('mongoose-to-joi-translator');
 const schema = new Schema({ word: { type: String } });
 const ModelName = mongoose.model('ModelName', schema);
 // Extract schema
-const joiSchema = getJoiSchema(ModelName.schema);
+const joiSchema = getJoiSchema(ModelName);
 // Use Joi to validate
 const { error, value } = Joi.validate({ word: 'hello' }, joiSchema);
 ```
