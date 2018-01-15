@@ -3,7 +3,21 @@
 'use strict';
 
 const Joi = require('joi');
-const {has, __, pathOr} = require('ramda');
+const {has, __, pathOr, path} = require('ramda');
+
+const getPropertiesSchema = obj => {
+  const nestedObjectDetails = pathOr(
+    path(['paths'], obj), ['schema', 'paths'], obj
+  );
+  const joiSchema = {};
+  const nestedPropHas = has(__, nestedObjectDetails);
+  for(const key in nestedObjectDetails) {
+    if(nestedPropHas(key)) {
+      joiSchema[key] = director(nestedObjectDetails[key]);
+    }
+  }
+  return joiSchema;
+};
 
 /**
  * contains base options to be used for all types included unknown ones
@@ -178,20 +192,7 @@ class ObjectHandlers extends AnyHandler {
    * Handles object properties
    */
   properties() {
-    // If this is the root document, it will not have schema property.
-    // Also, this for backward compatibility if the user did Model or Model.schema
-    // This part is not required now, but will be required later when dealing with issue #9
-    const nestedObjectDetails = pathOr(
-      this.objectDetails.paths, ['objectDetails', 'schema', 'paths'], this
-    );
-    const joiSchema = {};
-    const nestedPropHas = has(__, nestedObjectDetails);
-    for(const key in nestedObjectDetails) {
-      if(nestedPropHas(key)) {
-        joiSchema[key] = director(nestedObjectDetails[key]);
-      }
-    }
-    this.joiObj = this.joiObj.keys(joiSchema);
+    this.joiObj = this.joiObj.keys(getPropertiesSchema(this.objectDetails));
   }
 }
 
@@ -241,17 +242,6 @@ function director(objectDetails, dynamicInstanceType) {
  * @param {Object} mongoSchema mongoose schema
  * @returns {Object}
  */
-const getJoiSchema = mongoSchema => {
-  const joiSchema = {};
-  const objectsDetails = mongoSchema.paths;
-  const objDetailsHas = has(__, objectsDetails);
-
-  for(const key in objectsDetails) {
-    if(objDetailsHas(key)) {
-      joiSchema[key] = director(objectsDetails[key]);
-    }
-  }
-  return joiSchema;
-};
+const getJoiSchema = mongoSchema => getPropertiesSchema(mongoSchema);
 
 exports.getJoiSchema = getJoiSchema;
