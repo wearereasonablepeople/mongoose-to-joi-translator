@@ -1,6 +1,7 @@
 'use strict';
 
-const {Schema, Types: {ObjectId}} = require('mongoose');
+const mongoose = require('mongoose');
+const {Schema, Types: {ObjectId}} = mongoose;
 const joiHelpers = require('../joiHelpers');
 const Joi = require('joi');
 
@@ -90,6 +91,24 @@ describe('joiHelpers', () => {
       expect(Joi.validate({locations: [{latitude: '123', longitude: '456'}]}, joiSchema).error)
       .toBeNull();
       expect(Joi.validate({locations: [1]}, joiSchema).error).toBeTruthy();
+    });
+    it('should validate simple mongoose Model', () => {
+      const schema = sc({location: sc({latitude: String, longitude: String})});
+      const Model = mongoose.model('SomeModelName', schema);
+      const joiSchema = joiHelpers.getJoiSchema(Model);
+      expect(Joi.validate({location: {latitude: '123', longitude: '456'}}, joiSchema).error)
+      .toBeNull();
+      expect(Joi.validate({location: {latitude: '123', longitude: 456}}, joiSchema).error)
+      .toBeTruthy();
+    });
+    it('should validate simple mongoose Model.schema (for backward compatibility)', () => {
+      const schema = sc({location: sc({latitude: String, longitude: String})});
+      const Model = mongoose.model('SomeModelName', schema);
+      const joiSchema = joiHelpers.getJoiSchema(Model.schema);
+      expect(Joi.validate({location: {latitude: '123', longitude: '456'}}, joiSchema).error)
+      .toBeNull();
+      expect(Joi.validate({location: {latitude: '123', longitude: 456}}, joiSchema).error)
+      .toBeTruthy();
     });
     /**
      * Number type
