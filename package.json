@@ -1,7 +1,7 @@
 {
   "name": "mongoose-to-joi-translator",
   "version": "2.0.2",
-  "description": "Extracts schema from mongoose and generates an equivilent JOI schema.",
+  "description": "Converts mongoose schema to Joi.",
   "repository": "git@github.com:wearereasonablepeople/mongoose-to-joi-translator.git",
   "main": "index.js",
   "scripts": {
@@ -21,5 +21,10 @@
     "eslint-config-warp": "^2.1.0",
     "jest": "^22.0.1",
     "mongoose": "^4.13.7"
-  }
+  },
+  "keywords": [
+    "joi",
+    "mongoose"
+  ]
+
 }

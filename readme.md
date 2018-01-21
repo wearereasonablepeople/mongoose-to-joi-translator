@@ -8,7 +8,6 @@
 
 ### Description
 Translates Mongoose schema to Joi. You can use Joi schema to do the validation. The idea is to write database models once and validate everywhere.
-You may use this package with [generic-joi-validator](https://github.com/wearereasonablepeople/generic-joi-validator).
 
 ### Installation
 ```
