@@ -1,6 +1,6 @@
 {
   "name": "mongoose-to-joi-translator",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Converts mongoose schema to Joi.",
   "repository": "git@github.com:wearereasonablepeople/mongoose-to-joi-translator.git",
   "main": "index.js",

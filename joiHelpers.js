@@ -227,7 +227,7 @@ function director(objectDetails, dynamicInstanceType) {
       handler = new ObjectHandlers(objectDetails, Joi.object());
       break;
     case 'ObjectID':
-      handler = new StringHandler(objectDetails, Joi.string().hex().length(24).required());
+      handler = new StringHandler(objectDetails, Joi.string().hex().length(24));
       break;
     default:
       handler = new AnyHandler(objectDetails);
