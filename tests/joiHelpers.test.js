@@ -11,6 +11,9 @@ const sc = obj => new Schema(obj, {_id: false});
 // integration test
 describe('joiHelpers', () => {
   describe('#getJoiSchema', () => {
+    /**
+     * String
+     */
     it('should validate string type', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({word: {type: String}}));
       delete joiSchema._id;
@@ -23,12 +26,18 @@ describe('joiHelpers', () => {
       expect(Joi.validate({word: 'hello'}, joiSchema).error).toBeNull();
       expect(Joi.validate({word: 'h'}, joiSchema).error).toBeTruthy();
     });
+    /**
+     * Any
+     */
     it('should validate any.required', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({word: {type: String, required: true}}));
       delete joiSchema._id;
       expect(Joi.validate({word: 'hello'}, joiSchema).error).toBeNull();
       expect(Joi.validate({ }, joiSchema).error).toBeTruthy();
     });
+    /**
+     * Arrays
+     */
     it('should validate array type', () => {
       const joiSchema = joiHelpers.getJoiSchema(new Schema({words: []}));
       delete joiSchema._id;
