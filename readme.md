@@ -1,6 +1,9 @@
 ![Mongoose-to-joi-translator Logo](https://raw.github.com/wearereasonablepeople/mongoose-to-joi-translator/master/images/mtj.png)
 
-# mongoose-to-joi-translator 
+# :warning: Unmaintained
+This package is no longer maintained.
+
+# mongoose-to-joi-translator
 [![Build Status](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator.svg?branch=master)](https://travis-ci.org/wearereasonablepeople/mongoose-to-joi-translator)
 [![codecov](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator/branch/master/graph/badge.svg?token=i5p2uk2acI)](https://codecov.io/gh/wearereasonablepeople/mongoose-to-joi-translator)
 [![dependencies Status](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator/status.svg)](https://david-dm.org/wearereasonablepeople/mongoose-to-joi-translator)
